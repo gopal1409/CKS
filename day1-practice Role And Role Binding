@@ -1,0 +1,6 @@
+##we will create two name space red and blue
+   40  kubectl create ns blue
+   41  kubectl create ns red
+##user jane can only get secret in namespace red
+ 45  kubectl -n red create role secret-manager --verb=get --resource=secrets -o yaml --dry-run=client
+   46  kubectl -n red create role secret-manager --verb=get --resource=secrets
