@@ -7,4 +7,18 @@
 ##create a role binding for jane
   48  kubectl -n red create rolebinding secret-manager --role=secret-manager --user=jane -o yaml --dry-run=client
    49  kubectl -n red create rolebinding secret-manager --role=secret-manager --user=jane
+#####lets create another role for user jane where they can get and list secret in blue namespace
+ 51  kubectl -n blue create role secret-manager --verb=get --verb=list --resource=secrets -o yaml --dry-run=client
+   52  kubectl -n blue create role secret-manager --verb=get --verb=list --resource=secrets
+###lets bind the role
+ 54  kubectl -n blue create rolebinding secret-manager --role=secret-manager --user=jane -o yaml --dry-run=client
+   55  kubectl -n blue create rolebinding secret-manager --role=secret-manager --user=jane
+####lets verify it using kubectl auth 
+ 58  kubectl auth
+   59  kubectl -n red auth can-i get secrets --as jane
+   60  kubectl -n red auth can-i get secrets --as tom
+   61  kubectl -n red auth can-i delete secrets --as jane
+   62  kubectl -n red auth can-i list secrets --as jane
+###but jane can list secret in namespace blue
+ kubectl -n blue auth can-i list secrets --as jane
 
