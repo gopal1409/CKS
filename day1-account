@@ -5,3 +5,67 @@
 
 User and ccertificate -csr - certificate singing request
 openssl----> csr -----> certificatesingingrequest api of k8s
+##user and certificate leak+invalidate
+there is no way to invalidate a certificate
+if a certificate has been leak
+###lets create a certificate+key and authenticate as user jane
+###create csg
+sign csr using kubernete api
+use cert+key to connect to k8s API
+###########################################
+create key--->create CSR--->API----download CRT from api ----use crt+key
+###############################################################
+##first we have to generate a key
+#########################################
+openssl genrsa --out jane.key 2048
+####from that key we will create a certificate singing request
+ openssl req -new -key jane.key -out jane.csr
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:
+State or Province Name (full name) [Some-State]:
+Locality Name (eg, city) []:
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:
+Organizational Unit Name (eg, section) []:
+Common Name (e.g. server FQDN or YOUR name) []:jane ##in the common name provide teh name in which we created a key
+Email Address []:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+###we will create a kubernetes resource called as certificate singing request search for the document in k8s
+
+##lets create a file for crt singing
+vi crt.yml
+#############################
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: jane
+spec:
+  request: todo
+  signerName: kubernetes.io/kube-apiserver-client
+  expirationSeconds: 86400  # one day
+  usages:
+  - client auth
+#####################################
+##in the request filed we need to modify and provide the key generated in the last step
+cat jane.csr | base64
+cat jane.csr | base64 -w 0
+####copy the key 
+vi crt.yml
+##3in the request section paste the key
+ kubectl -f crt.yml create
+ kubectl get csr
+##this will show condtion is pending
+idea is to administrator need to approve it
+  102  kubectl certificate approve jane
+#check jane is approve
+  103  kubectl get csr
+
