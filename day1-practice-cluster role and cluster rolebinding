@@ -1,0 +1,25 @@
+###create a cluster role deploy-deleter which allow to delete deployment
+  user jane can delete deployment in all the namespace
+  user jim can delete deployment only in namespace red 
+  test it using auth can-i
+  ###############################
+  ##lets create the cluster role deploy-deleted
+   70  kubectl create clusterrole deploy-deleter --verb delete --resource deployments
+##user jane can delete deployment in all the namespace
+  kubectl create clusterrolebinding deploy-deleter --user=jane  --clusterrole=deploy-deleter
+  ###next user jim can delete deployment in namesapce red
+   kubectl -n red create rolebinding deploy-deleter --user jim --clusterrole deploy-deleter
+##lets test 
+  #can jane delete deployment in all namesapce
+  kubectl auth can-i delete deployment --as jane -A
+   80  kubectl auth can-i delete deployment --as jane -n red
+   81  kubectl auth can-i delete deployment --as jane -n blue
+   82  kubectl auth can-i delete deployment --as jane -n default
+  ###if jane want to delete pod
+   kubectl auth can-i delete pod --as jane -n default
+
+##################
+   85  kubectl auth can-i delete deployment --as jim -A
+   86  kubectl auth can-i delete deployment --as jim -n default
+  ##this will work as jim has cluetr role in red namespace where he can delete pod
+   87  kubectl auth can-i delete deployment --as jim -n red
