@@ -1,1 +1,7 @@
+##there is no k8s user resource 
+##a user is someonw with a cert and key
+##client cert---certificate singed by the cluster certificate authority 
+##usrname under common name /CN=jane
 
+User and ccertificate -csr - certificate singing request
+openssl----> csr -----> certificatesingingrequest api of k8s
