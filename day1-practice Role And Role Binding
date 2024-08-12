@@ -4,3 +4,7 @@
 ##user jane can only get secret in namespace red
  45  kubectl -n red create role secret-manager --verb=get --resource=secrets -o yaml --dry-run=client
    46  kubectl -n red create role secret-manager --verb=get --resource=secrets
+##create a role binding for jane
+  48  kubectl -n red create rolebinding secret-manager --role=secret-manager --user=jane -o yaml --dry-run=client
+   49  kubectl -n red create rolebinding secret-manager --role=secret-manager --user=jane
+
