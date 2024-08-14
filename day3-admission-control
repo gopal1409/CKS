@@ -1,0 +1,55 @@
+Adminission contoller
+  ##this is used for doing node restriction
+  ##limit the node labels kubelet can modify
+  ##it can modify the certan labels not on other nodes. 
+  ensure secure workload isolation via labels
+  no one can pretend and can secure node
+  #########verify the node restricon works
+
+  use worker node kubelets kubeconfig to set labels
+
+vim /etc/kubernetes/manifests/kube-apiserver.yaml
+
+   - command:
+    - kube-apiserver
+    - --advertise-address=10.0.0.4
+    - --allow-privileged=true
+    - --authorization-mode=Node,RBAC
+    - --client-ca-file=/etc/kubernetes/pki/ca.crt
+    - --enable-admission-plugins=NodeRestriction ##this is enabled by default
+      ###################################################
+      go to the worker node and check what are the node restriction we have
+      root@worker1:~# kubectl config view
+apiVersion: v1
+clusters: null
+contexts: null
+current-context: ""
+kind: Config
+preferences: {}
+users: null
+######nothing has been configured 
+  ###so we will look into kubelet conf
+   vi /etc/kubernetes/kubelet.conf
+##the kubelet confi contains the kubernetes configuration 
+  ###we can use this file using export command
+  root@worker1:~# export KUBECONFIG=/etc/kubernetes/kubelet.conf
+root@worker1:~# kubectl get ns
+Error from server (Forbidden): namespaces is forbidden: User "system:node:worker1" cannot list resource "namespaces" in API group "" at the cluster scope
+##how to resolve the no permission authetication as use cks 
+  ##we will nto get namespace but we are allowed to get nodes
+  root@worker1:~# kubectl get nodes
+NAME        STATUS   ROLES           AGE    VERSION
+k8smaster   Ready    control-plane   5d1h   v1.30.3
+worker1     Ready    <none>          5d1h   v1.30.3
+###lets try to set a label for the  master node from worker node node restriction restrict this
+
+  root@worker1:~# kubectl label node k8smaster cks/test=yes
+Error from server (Forbidden): nodes "k8smaster" is forbidden: node "worker1" is not allowed to modify node "k8smaster"
+  ##lets add a label to cks worker it will work
+  root@worker1:~# kubectl label node worker1 cks/test=yes
+node/worker1 labeled
+####there are restricted labels admission control do not allow to put a system defined nodes 
+    root@worker1:~# kubectl label node worker1 node-restriction.kubernetes.io/test=yes
+Error from server (Forbidden): nodes "worker1" is forbidden: is not allowed to modify labels: node-restriction.kubernetes.io/test
+
+
