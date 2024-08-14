@@ -10,3 +10,31 @@ service/kubernetes edited
 root@k8smaster:~# kubectl get svc
 NAME         TYPE       CLUSTER-IP   EXTERNAL-IP   PORT(S)         AGE
 kubernetes   NodePort   10.96.0.1    <none>        443:30262/TCP   5d
+###change the ip address to node machine ip address
+PS C:\Users\gopal> curl https://13.86.107.151:30262
+curl : The underlying connection was closed: Could not establish trust relationship for the SSL/TLS secure channel.
+At line:1 char:1
++ curl https://13.86.107.151:30262
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (System.Net.HttpWebRequest:HttpWebRequest) [Invoke-WebRequest], WebExc
+   eption
+    + FullyQualifiedErrorId : WebCmdletWebResponseException,Microsoft.PowerShell.Commands.InvokeWebRequestCommand
+#####some how it is communicating but it is communicatin withought ssl
+##kubectl config view will show the cluster certificate
+  173  kubectl config view --raw
+###copy the certificate from the below mentioned url
+ 175  kubectl config view --raw
+#####################
+open a notepad and paste the configuration in the node machine 
+notepad confg
+##############################################
+after pasting the config 
+####change the ip address of the master machine server to public ip
+ server: https://13.86.107.151:30262
+  name: kubernetes
+contexts:
+############################
+##then validate teh certificate 
+kubectl --kubeconfig conf get ns
+##you will get an error like this certificate is valid for this ip address but we change the ip to an public ip
+E0814 10:38:42.474622   12156 memcache.go:238] couldn't get current server API group list: Get "https://13.86.107.151:30262/api?timeout=32s": x509: certificate is valid for 10.96.0.1, 10.0.0.4, not 13.86.107.151
