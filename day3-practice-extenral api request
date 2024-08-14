@@ -1,0 +1,12 @@
+##make k8s api reachable from the outside
+  access using kubectl(copy kube config)
+
+  root@k8smaster:~# kubectl get svc
+NAME         TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.96.0.1    <none>        443/TCP   5d
+    ##make the kubernetes default avaiable using nodeport
+root@k8smaster:~# kubectl edit svc kubernetes
+service/kubernetes edited
+root@k8smaster:~# kubectl get svc
+NAME         TYPE       CLUSTER-IP   EXTERNAL-IP   PORT(S)         AGE
+kubernetes   NodePort   10.96.0.1    <none>        443:30262/TCP   5d
