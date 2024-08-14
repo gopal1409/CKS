@@ -38,3 +38,19 @@ contexts:
 kubectl --kubeconfig conf get ns
 ##you will get an error like this certificate is valid for this ip address but we change the ip to an public ip
 E0814 10:38:42.474622   12156 memcache.go:238] couldn't get current server API group list: Get "https://13.86.107.151:30262/api?timeout=32s": x509: certificate is valid for 10.96.0.1, 10.0.0.4, not 13.86.107.151
+##we will add this public ip into an file 
+root@k8smaster:~# cd /etc/kubernetes/pki/
+root@k8smaster:/etc/kubernetes/pki# ll
+###you will see a file apiserver.crt
+##lets inspect the certificate
+openssl x509 -in apiserver.crt -text
+###check in the output
+  X509v3 Subject Alternative Name:
+                DNS:k8smaster, DNS:kubernetes, DNS:kubernetes.default, DNS:kubernetes.default.svc, DNS:kubernetes.default.svc.cluster.local, IP Address:10.96.0.1, IP Address:10.0.0.4
+    Signature Algorithm: sha256WithRSAEncryption
+####you will see the DNS name modify the hostname 
+###agains open the config file and add the dns name which is pointing to my external ip address
+    server: https://kubernetes:30262
+  name: kubernetes
+###now re run the command it will show you rthe namespaces
+ 15 kubectl --kubeconfig conf get ns
