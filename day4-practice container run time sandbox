@@ -1,0 +1,20 @@
+###we have to discuss about container run time. 
+  till the contianer run time is secure k8s is secure
+  Break Out of Contianer. 
+  ##contianer are not contained
+  Just beacuse it run in a contianer does mena it is protected
+  ##lets container the linuix kernal from inside a container
+  root@k8smaster:~# kubectl run pod --image=nginx
+pod/pod created
+root@k8smaster:~# kubectl exec pod -it bash
+kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.
+root@pod:/# uname -r
+5.15.0-1070-azure #this is the linux kerna
+root@pod:/#
+##from outside the container also it will show the same kernal
+  root@k8smaster:~# uname -r
+5.15.0-1070-azure
+###the below command will show all the syscall in your system
+     strace uname -r
+#######if you want to hack linux kernal look for DirtyCOW famus tool to exploit linux kerna
+
